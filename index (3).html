@@ -1,0 +1,391 @@
+اتم اعداده من قبل طارق البريهي
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>مراقبة ذكية للدواجن</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Tahoma', 'Arial', sans-serif;
+      background-color: #f5f7fa;
+      color: #333;
+      line-height: 1.6;
+      direction: rtl;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 2rem 0;
+      text-align: center;
+      margin-bottom: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      font-weight: bold;
+    }
+
+    .subtitle {
+      font-size: 1.2rem;
+      opacity: 0.9;
+    }
+
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .card {
+      background: white;
+      border-radius: 15px;
+      padding: 2rem;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .card-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: 1rem;
+      font-size: 1.5rem;
+    }
+
+    .temperature .card-icon {
+      background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+      color: white;
+    }
+
+    .humidity .card-icon {
+      background: linear-gradient(45deg, #74b9ff, #0984e3);
+      color: white;
+    }
+
+    .feed .card-icon {
+      background: linear-gradient(45deg, #fdcb6e, #e17055);
+      color: white;
+    }
+
+    .health .card-icon {
+      background: linear-gradient(45deg, #55a3ff, #003d82);
+      color: white;
+    }
+
+    .card-title {
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: #2d3436;
+    }
+
+    .metric-value {
+      font-size: 3rem;
+      font-weight: bold;
+      margin: 1rem 0;
+    }
+
+    .temperature .metric-value {
+      color: #e17055;
+    }
+
+    .humidity .metric-value {
+      color: #74b9ff;
+    }
+
+    .feed .metric-value {
+      color: #fdcb6e;
+    }
+
+    .health .metric-value {
+      color: #55a3ff;
+    }
+
+    .metric-unit {
+      font-size: 1.2rem;
+      color: #636e72;
+      margin-right: 0.5rem;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      border-radius: 25px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      margin-top: 1rem;
+    }
+
+    .status.normal {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .status.warning {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .status.critical {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    .controls {
+      background: white;
+      border-radius: 15px;
+      padding: 2rem;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+      margin-bottom: 2rem;
+    }
+
+    .controls h2 {
+      margin-bottom: 1.5rem;
+      color: #2d3436;
+      font-size: 1.5rem;
+    }
+
+    .control-group {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+
+    .control-button {
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 10px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: inherit;
+    }
+
+    .control-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .control-button:active {
+      transform: translateY(0);
+    }
+
+    .alerts {
+      background: white;
+      border-radius: 15px;
+      padding: 2rem;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .alerts h2 {
+      margin-bottom: 1.5rem;
+      color: #2d3436;
+      font-size: 1.5rem;
+    }
+
+    .alert-item {
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 10px;
+      border-right: 4px solid;
+    }
+
+    .alert-item.info {
+      background: #e3f2fd;
+      border-color: #2196f3;
+    }
+
+    .alert-item.warning {
+      background: #fff8e1;
+      border-color: #ff9800;
+    }
+
+    .alert-time {
+      font-size: 0.9rem;
+      color: #636e72;
+      margin-top: 0.5rem;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 10px;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+
+      .dashboard {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      .card {
+        padding: 1.5rem;
+      }
+
+      .metric-value {
+        font-size: 2.5rem;
+      }
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 3rem;
+      padding: 2rem;
+      color: #636e72;
+      border-top: 1px solid #ddd;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🐔 مراقبة ذكية للدواجن</h1>
+      <p class="subtitle">نظام مراقبة متطور لضمان صحة وإنتاجية الدواجن</p>
+    </header>
+
+    <div class="dashboard">
+      <div class="card temperature">
+        <div class="card-header">
+          <div class="card-icon">🌡️</div>
+          <h3 class="card-title">درجة الحرارة</h3>
+        </div>
+        <div class="metric-value">
+          24<span class="metric-unit">°م</span>
+        </div>
+        <div class="status normal">طبيعية</div>
+      </div>
+
+      <div class="card humidity">
+        <div class="card-header">
+          <div class="card-icon">💧</div>
+          <h3 class="card-title">الرطوبة</h3>
+        </div>
+        <div class="metric-value">
+          65<span class="metric-unit">%</span>
+        </div>
+        <div class="status normal">مثالية</div>
+      </div>
+
+      <div class="card feed">
+        <div class="card-header">
+          <div class="card-icon">🌾</div>
+          <h3 class="card-title">مستوى العلف</h3>
+        </div>
+        <div class="metric-value">
+          78<span class="metric-unit">%</span>
+        </div>
+        <div class="status warning">منخفض</div>
+      </div>
+
+      <div class="card health">
+        <div class="card-header">
+          <div class="card-icon">❤️</div>
+          <h3 class="card-title">الحالة الصحية</h3>
+        </div>
+        <div class="metric-value">
+          95<span class="metric-unit">%</span>
+        </div>
+        <div class="status normal">ممتازة</div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <h2>🎛️ التحكم في النظام</h2>
+      <div class="control-group">
+        <button class="control-button" onclick="toggleFan()">تشغيل/إيقاف المروحة</button>
+        <button class="control-button" onclick="feedChickens()">تغذية الدواجن</button>
+        <button class="control-button" onclick="checkHealth()">فحص صحي شامل</button>
+        <button class="control-button" onclick="generateReport()">تقرير يومي</button>
+      </div>
+    </div>
+
+    <div class="alerts">
+      <h2>🔔 التنبيهات والإشعارات</h2>
+      <div class="alert-item info">
+        <strong>معلومة:</strong> تم تسجيل درجة حرارة مثالية في الحظيرة رقم 1
+        <div class="alert-time">منذ 5 دقائق</div>
+      </div>
+      <div class="alert-item warning">
+        <strong>تحذير:</strong> مستوى العلف منخفض في الحظيرة رقم 2 - يحتاج إعادة تعبئة
+        <div class="alert-time">منذ 15 دقيقة</div>
+      </div>
+      <div class="alert-item info">
+        <strong>معلومة:</strong> تم إكمال الفحص الصحي اليومي بنجاح
+        <div class="alert-time">منذ ساعة واحدة</div>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <p>© 2024 نظام المراقبة الذكية للدواجن - جميع الحقوق محفوظة</p>
+      <p>تم التطوير بأحدث التقنيات لضمان أفضل رعاية للدواجن</p>
+    </footer>
+  </div>
+
+  <script>
+    function toggleFan() {
+      alert('تم تشغيل/إيقاف المروحة بنجاح');
+    }
+
+    function feedChickens() {
+      alert('تم بدء عملية التغذية الآلية');
+    }
+
+    function checkHealth() {
+      alert('جاري إجراء الفحص الصحي الشامل...');
+    }
+
+    function generateReport() {
+      alert('تم إنشاء التقرير اليومي بنجاح');
+    }
+
+    // تحديث البيانات كل 30 ثانية (محاكاة)
+    setInterval(function() {
+      // محاكاة تحديث درجة الحرارة
+      const tempElement = document.querySelector('.temperature .metric-value');
+      const currentTemp = parseInt(tempElement.textContent);
+      const newTemp = currentTemp + (Math.random() - 0.5) * 2;
+      tempElement.innerHTML = Math.round(newTemp) + '<span class="metric-unit">°م</span>';
+      
+      // محاكاة تحديث الرطوبة
+      const humidityElement = document.querySelector('.humidity .metric-value');
+      const currentHumidity = parseInt(humidityElement.textContent);
+      const newHumidity = currentHumidity + (Math.random() - 0.5) * 5;
+      humidityElement.innerHTML = Math.round(Math.max(0, Math.min(100, newHumidity))) + '<span class="metric-unit">%</span>';
+    }, 30000);
+  </script>
+</body>
+</html>
